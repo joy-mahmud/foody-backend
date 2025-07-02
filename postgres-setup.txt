@@ -1,0 +1,18 @@
+1.pipenv install psycopg2-binary
+2.create new database (CREATE DATABASE db_name)(optional)
+
+3.sttings.py: change this config to settings.py.
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'your_database_name',  # Replace with your database name
+        'USER': 'your_database_user',  # Replace with your PostgreSQL username
+        'PASSWORD': 'your_database_password',  # Replace with your PostgreSQL password
+        'HOST': 'localhost',  # Use the database server IP if remote
+        'PORT': '5432',  # Default PostgreSQL port
+    }
+}
+
+4.python manage.py makemigrations
+5.python manage.py migrate
