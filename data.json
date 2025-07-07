@@ -1,0 +1,170 @@
+[
+    {
+        "model": "foodItems.fooditem",
+        "pk": 1,
+        "fields": {
+            "title": "Margherita Pizza",
+            "description": "Classic pizza with tomato sauce, mozzarella, and basil.",
+            "price": 8.99,
+            "quantity": 10,
+            "origin": "Italy",
+            "category": "Fast Food",
+            "rating": 4.5,
+            "image": "https://example.com/images/margherita.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 2,
+        "fields": {
+            "title": "Chicken Biryani",
+            "description": "Fragrant rice cooked with spiced chicken and saffron.",
+            "price": 10.5,
+            "quantity": 5,
+            "origin": "India",
+            "category": "Main Course",
+            "rating": 4.8,
+            "image": "https://example.com/images/biryani.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 3,
+        "fields": {
+            "title": "Caesar Salad",
+            "description": "Fresh romaine lettuce with creamy Caesar dressing.",
+            "price": 6.75,
+            "quantity": 0,
+            "origin": "Mexico",
+            "category": "Salad",
+            "rating": 4.2,
+            "image": "https://example.com/images/caesar.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 4,
+        "fields": {
+            "title": "Beef Burger",
+            "description": "Juicy beef patty with cheese, lettuce, and tomato.",
+            "price": 9.25,
+            "quantity": 7,
+            "origin": "USA",
+            "category": "Fast Food",
+            "rating": 4.6,
+            "image": "https://example.com/images/burger.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 5,
+        "fields": {
+            "title": "Sushi Roll",
+            "description": "Delicate rolls filled with rice, seaweed, and seafood.",
+            "price": 12.0,
+            "quantity": 3,
+            "origin": "Japan",
+            "category": "Seafood",
+            "rating": 4.7,
+            "image": "https://example.com/images/sushi.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 6,
+        "fields": {
+            "title": "Pad Thai",
+            "description": "Thai stir-fried noodles with tofu, peanuts, and lime.",
+            "price": 8.5,
+            "quantity": 0,
+            "origin": "Thailand",
+            "category": "Noodles",
+            "rating": 4.3,
+            "image": "https://example.com/images/padthai.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 7,
+        "fields": {
+            "title": "Grilled Salmon",
+            "description": "Perfectly grilled salmon with lemon and herbs.",
+            "price": 14.0,
+            "quantity": 2,
+            "origin": "Norway",
+            "category": "Seafood",
+            "rating": 4.9,
+            "image": "https://example.com/images/salmon.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 8,
+        "fields": {
+            "title": "Tacos al Pastor",
+            "description": "Mexican-style tacos with marinated pork and pineapple.",
+            "price": 7.25,
+            "quantity": 11,
+            "origin": "Mexico",
+            "category": "Street Food",
+            "rating": 4.4,
+            "image": "https://example.com/images/tacos.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 9,
+        "fields": {
+            "title": "Pasta Carbonara",
+            "description": "Creamy pasta with eggs, cheese, pancetta, and pepper.",
+            "price": 11.5,
+            "quantity": 6,
+            "origin": "Italy",
+            "category": "Pasta",
+            "rating": 4.6,
+            "image": "https://example.com/images/carbonara.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 10,
+        "fields": {
+            "title": "Butter Chicken",
+            "description": "Rich and creamy tomato-based curry with chicken.",
+            "price": 9.75,
+            "quantity": 4,
+            "origin": "India",
+            "category": "Curry",
+            "rating": 4.8,
+            "image": "https://example.com/images/butterchicken.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 11,
+        "fields": {
+            "title": "Veggie Wrap",
+            "description": "Whole wheat wrap filled with fresh vegetables and hummus.",
+            "price": 6.5,
+            "quantity": 0,
+            "origin": "Mediterranean",
+            "category": "Healthy",
+            "rating": 4.1,
+            "image": "https://example.com/images/wrap.jpg"
+        }
+    },
+    {
+        "model": "foodItems.fooditem",
+        "pk": 12,
+        "fields": {
+            "title": "Ice Cream Sundae",
+            "description": "Scoops of ice cream topped with syrup, nuts, and a cherry.",
+            "price": 5.0,
+            "quantity": 15,
+            "origin": "USA",
+            "category": "Dessert",
+            "rating": 4.7,
+            "image": "https://example.com/images/sundae.jpg"
+        }
+    }
+]
