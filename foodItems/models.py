@@ -7,5 +7,5 @@ class FoodItem(models.Model):
     quantity = models.IntegerField()
     origin = models.CharField(max_length=100)
     category=models.CharField(max_length=100)
-    rating = models.FloatField()
-    image = models.URLField()
+    rating = models.FloatField(null=True,blank=True)
+    image = models.ImageField(upload_to='food-images/')
