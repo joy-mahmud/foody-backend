@@ -60,3 +60,35 @@ def add_food_item(request):
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
     
+@csrf_exempt
+def add_food_item(request):
+    if request.method =="POST":
+        try:
+            title = request.POST.get('title')
+            description = request.POST.get('description')
+            price = request.POST.get('price')
+            quantity = request.POST.get('quantity')
+            origin = request.POST.get('origin')
+            category = request.POST.get('category')
+            image = request.FILES.get('image')
+
+            food = FoodItem.objects.create(
+                title=title,
+                description = description,
+                price= price,
+                quantity = quantity,
+                origin = origin,
+                category = category,
+                image = image
+                )
+            return JsonResponse({
+                'message':"food item added successfully"
+            })
+        except Exception as e:
+            return JsonResponse({'error':str(e)},status = 500)
+        
+    return JsonResponse({
+        'error':"invalid request method"
+    },status = 405)
+            
+    
