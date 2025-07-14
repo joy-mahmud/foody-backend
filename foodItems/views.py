@@ -4,9 +4,21 @@ from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
+# def get_food_items(request):
+#     food_items = FoodItem.objects.all()
+#     data = [model_to_dict(item)  for item in food_items]
+#     return JsonResponse(data, safe=False)
+
 def get_food_items(request):
     food_items = FoodItem.objects.all()
-    data = [model_to_dict(item)  for item in food_items]
+    data = []
+    for item in food_items:
+        item_dict = model_to_dict(item)
+        if item.image:
+            item_dict['image']=request.build_absolute_uri(item.image.url)
+        else:
+            item_dict['image']=None
+        data.append(item_dict)
     return JsonResponse(data, safe=False)
     
 @csrf_exempt
@@ -39,5 +51,27 @@ def add_food_item(request):
     return JsonResponse({
         'error':"invalid request method"
     },status = 405)
+    
+@csrf_exempt
+def update_food_item(request,item_id):
+    if request.method =="POST":
+        try:
+            food = FoodItem.objects.get(id=item_id)
+            food.title = request.POST.get('title',food.title)
+            food.description = request.POST.get('description',food.description)
+            food.price = request.POST.get('price',food.price)
+            food.quantity = request.POST.get('quantity',food.quantity)
+            food.origin = request.POST.get('origin',food.origin)
+            food.category = request.POST.get('category',food.category)
+            
+            if 'image' in request.FILES:
+                food.image = request.FILES['image']
+            food.save()
+            return JsonResponse({'message':'Food item updated successfully'})
+        except FoodItem.DoesNotExist:
+            return JsonResponse({"message":"food item not found"},status = 404)
+        except Exception as e:
+            return JsonResponse({"error":str(e)},status = 405)
+    return JsonResponse({"error":"only post method is allowed"},status = 405)
             
     
