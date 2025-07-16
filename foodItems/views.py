@@ -73,5 +73,23 @@ def update_food_item(request,item_id):
         except Exception as e:
             return JsonResponse({"error":str(e)},status = 405)
     return JsonResponse({"error":"only post method is allowed"},status = 405)
+
+def get_single_food_item(request,item_id):
+    if request.method=="GET":
+        try:
+            food_odj=FoodItem.objects.get(id=item_id)
+            food = model_to_dict(food_odj)
+            if food_odj.image:
+                food['image']=request.build_absolute_uri(food_odj.image.url)
+            else:
+                food['image']=None
+            return JsonResponse(food)
+        except Exception as e:
+            return JsonResponse({'error':str(e)},status=400)
+        except FoodItem.DoesNotExist:
+            return JsonResponse({'error':"Food item not found"},status=404)
+    return JsonResponse({"error":"Only get method is allowed"},status=405)
+        
+        
             
     
