@@ -89,7 +89,31 @@ def get_single_food_item(request,item_id):
         except FoodItem.DoesNotExist:
             return JsonResponse({'error':"Food item not found"},status=404)
     return JsonResponse({"error":"Only get method is allowed"},status=405)
-        
-        
-            
+
+@csrf_exempt       
+def delete_food_item(request,item_id):
+    if(request.method=="DELETE"):
+        try:
+            food = FoodItem.objects.get(id=item_id)
+            food.delete()
+            return JsonResponse({"message":"food item deleted successfully"},status=200)
+        except FoodItem.DoesNotExist:
+             return JsonResponse({'error':"Food item not found"},status = 404)
+    else:
+        return JsonResponse({"error":"Only delete method is allowed"},status=405)   
+
+def get_popular_foods(request):
+    if(request.method=="GET"):
+        try:
+            food_items = FoodItem.objects.filter(rating__gte=4.5).order_by('-rating')[:6]
+            data =[]
+            for item in food_items:
+                item_dict = model_to_dict(item)
+                item_dict['image'] = request.build_absolute_uri(item.image.url) if item.image else None
+                data.append(item_dict)
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            return JsonResponse({'error':str(e)},status=400)
+    return JsonResponse({"error":"Only get method is allowed"},status=405)
+
     
