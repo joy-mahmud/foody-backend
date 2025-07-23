@@ -116,4 +116,19 @@ def get_popular_foods(request):
             return JsonResponse({'error':str(e)},status=400)
     return JsonResponse({"error":"Only get method is allowed"},status=405)
 
+def get_foods_by_category(request):
+    if(request.method=="GET"):
+        category = request.GET.get('category')
+        try:
+            food_items = FoodItem.objects.filter(category__iexact=category)
+            data =[]
+            for item in food_items:
+                item_dict = model_to_dict(item)
+                item_dict['image'] = request.build_absolute_uri(item.image.url) if item.image else None
+                data.append(item_dict)
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            return JsonResponse({'error':str(e)},status=400)
+    return JsonResponse({"error":"Only get method is allowed"},status=405)
+
     
