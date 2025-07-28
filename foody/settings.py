@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'firebaseUser',
     'corsheaders',
-    'foodItems'
+    'foodItems',
+    'cart'
 ]
 
 MIDDLEWARE = [
