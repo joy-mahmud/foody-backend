@@ -7,5 +7,5 @@ urlpatterns = [
     path('food/<int:item_id>',views.get_single_food_item,name="update-food"),
     path('delete-food/<int:item_id>',views.delete_food_item,name="delete-food"),
     path('popular-foods/', views.get_popular_foods, name='popular_foods'),
-    path('foods-cat/', views.get_food_items_by_category, name='get_foods-cat'),
+    path('category-foods/',views.get_foods_by_category,name="get_popular_foods"),
 ]

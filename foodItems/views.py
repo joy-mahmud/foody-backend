@@ -158,24 +158,19 @@ def get_popular_foods(request):
             return JsonResponse(data, safe=False)
         except Exception as e:
             return JsonResponse({'error':str(e)},status=400)
-   return JsonResponse({'error': 'Only GET method allowed'}, status=405) 
-def get_food_items_by_category(request):
-    if request.method == 'GET':
+   return JsonResponse({'error': 'Only GET method allowed'}, status=405)
+ 
+def get_foods_by_category(request):
+    if(request.method=="GET"):
+        category = request.GET.get('category')
         try:
-            category = request.GET.get('category')
-            if category:
-                food_items = FoodItem.objects.filter(category__iexact=category)
-            else:
-                food_items = FoodItem.objects.all()
-
-            data = []
+            food_items = FoodItem.objects.filter(category__iexact=category)
+            data =[]
             for item in food_items:
                 item_dict = model_to_dict(item)
-                if item.image:
-                    item_dict['image'] = request.build_absolute_uri(item.image.url)
+                item_dict['image'] = request.build_absolute_uri(item.image.url) if item.image else None
                 data.append(item_dict)
-
-            return JsonResponse(data, safe=False)
+            return JsonResponse(data,safe=False)
         except Exception as e:
             return JsonResponse({'error':str(e)},status=400)
-    return JsonResponse({'error': 'Only GET method allowed'}, status=405) 
+    return JsonResponse({"error":"Only get method is allowed"},status=405)
