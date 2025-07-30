@@ -27,4 +27,26 @@ def add_to_cart(request):
         except Exception as e:
             return JsonResponse({"error":str(e)},status=400)
     JsonResponse({"error":"Method not allowed"}, status = 405)
-
+def get_cart_items(request,user_email):
+    try:
+        user = FirebaseUser.objects.get(email = user_email)
+        cart_items = CartItem.objects.filter(user=user).select_related('food')
+        print(cart_items)
+        data = []
+        for item in cart_items:
+            food = item.food
+            data.append({
+                "id":item.id,
+                "food_id":food.id,
+                "title":food.title,
+                "description":food.description,
+                "price":food.price,
+                "quantity":food.quantity,
+                "image":request.build_absolute_uri(food.image.url) if food.image else None,
+                "rating":food.rating,
+                "category":food.category,
+                "origin":food.origin
+            })
+        return JsonResponse(data,safe=False)
+    except FirebaseUser.DoesNotExist:
+        return JsonResponse({"error":"User not found"},status = 404)
