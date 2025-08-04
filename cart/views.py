@@ -50,3 +50,15 @@ def get_cart_items(request,user_email):
         return JsonResponse(data,safe=False)
     except FirebaseUser.DoesNotExist:
         return JsonResponse({"error":"User not found"},status = 404)
+    
+@csrf_exempt   
+def remove_cart_item(request):
+    if request.method =="DELETE":
+        try:
+            data = json.loads(request.body)
+            cart_item_id = data.get("cart_item_id")
+            item = CartItem.objects.get(id=cart_item_id)
+            item.delete()
+            return JsonResponse({"message":"cart item deleted successfully"},status = 200)
+        except CartItem.DoesNotExist:
+            return JsonResponse({"error":"item not found"}, status = 404)
