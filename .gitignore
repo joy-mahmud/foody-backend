@@ -1,6 +1,6 @@
 db.sqlite3
 # Python
-cart/__pycache__/
+**/__pycache__/
 *.py[cod]
 *.pyo
 *.pyd
@@ -17,7 +17,6 @@ ENV/
 *.log
 *.pot
 *.pyc
-media/
 staticfiles/
 
 # Django migrations
