@@ -41,7 +41,7 @@ def get_cart_items(request,user_email):
                 "title":food.title,
                 "description":food.description,
                 "price":food.price,
-                "quantity":food.quantity,
+                "quantity":item.quantity,
                 "image":request.build_absolute_uri(food.image.url) if food.image else None,
                 "rating":food.rating,
                 "category":food.category,
@@ -62,3 +62,21 @@ def remove_cart_item(request):
             return JsonResponse({"message":"cart item deleted successfully"},status = 200)
         except CartItem.DoesNotExist:
             return JsonResponse({"error":"item not found"}, status = 404)
+
+@csrf_exempt
+def update_cart_quantity(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            print(data)
+            cart_item_id = data.get("cart_item_id")
+            quantity = data.get("quantity")
+            item = CartItem.objects.get(id = cart_item_id)
+            item.quantity = quantity
+            item.save()
+            return JsonResponse({"message":"quantity updated"},status = 200)
+        except CartItem.DoesNotExist:
+            return JsonResponse({"error":"Item not found"},status = 404)
+    else:
+        return JsonResponse({"error":"method not allowed"},status = 400)
+        
