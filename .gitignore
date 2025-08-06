@@ -1,1 +1,68 @@
 db.sqlite3
+# Python
+cart/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+.pipenv/
+
+# Django specific
+*.log
+*.pot
+*.pyc
+media/
+staticfiles/
+
+# Django migrations
+
+# Environment variables
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Pipenv
+Pipfile.lock
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+.cache/
+pytest_cache/
+.coverage.*
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Node (if using Tailwind or any frontend tooling)
+node_modules/
+package-lock.json
+yarn.lock
