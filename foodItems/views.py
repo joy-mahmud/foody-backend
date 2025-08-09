@@ -7,20 +7,15 @@ from django.views.decorators.csrf import csrf_exempt
 
 # def get_food_items(request):
 #     food_items = FoodItem.objects.all()
-#     data = [model_to_dict(item)  for item in food_items]
+#     data = []
+#     for item in food_items:
+#         item_dict = model_to_dict(item)
+#         if item.image:
+#             item_dict['image']=request.build_absolute_uri(item.image.url)
+#         else:
+#             item_dict['image']=None
+#         data.append(item_dict)
 #     return JsonResponse(data, safe=False)
-
-def get_food_items(request):
-    food_items = FoodItem.objects.all()
-    data = []
-    for item in food_items:
-        item_dict = model_to_dict(item)
-        if item.image:
-            item_dict['image']=request.build_absolute_uri(item.image.url)
-        else:
-            item_dict['image']=None
-        data.append(item_dict)
-    return JsonResponse(data, safe=False)
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def get_food_items(request):
