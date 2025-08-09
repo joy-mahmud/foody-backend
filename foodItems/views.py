@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from .models import FoodItem 
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+
 # Create your views here.
 
 # def get_food_items(request):
@@ -20,6 +21,50 @@ def get_food_items(request):
             item_dict['image']=None
         data.append(item_dict)
     return JsonResponse(data, safe=False)
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+def get_food_items(request):
+    try:
+        # Read query params with defaults
+        page_number = request.GET.get("page", 1)
+        page_size = request.GET.get("page_size", 6)
+        # Validate page_size as integer
+        try:
+            page_size = int(page_size)
+            if page_size <= 0:
+                raise ValueError
+        except ValueError:
+            return JsonResponse({"error": "Invalid page_size. Must be a positive integer."}, status=400)
+
+        # Query and paginate
+        food_items = FoodItem.objects.all().order_by("id")
+        paginator = Paginator(food_items, page_size)
+
+        try:
+            page_obj = paginator.page(page_number)
+        except PageNotAnInteger:
+            return JsonResponse({"error": "Invalid page number. Must be an integer."}, status=400)
+        except EmptyPage:
+            return JsonResponse({"error": "Page out of range."}, status=404)
+
+        # Build response data
+        data = []
+        for item in page_obj.object_list:
+            item_dict = model_to_dict(item)
+            item_dict["image"] = (
+                request.build_absolute_uri(item.image.url) if item.image else None
+            )
+            data.append(item_dict)
+
+        return JsonResponse({
+            "count": paginator.count,
+            "num_pages": paginator.num_pages,
+            "current_page": page_obj.number,
+            "results": data
+        })
+
+    except Exception as e:
+        return JsonResponse({"error": "An unexpected error occurred."}, status=500)
     
 @csrf_exempt
 def add_food_item(request):
