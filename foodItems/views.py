@@ -2,25 +2,59 @@ from django.http import JsonResponse
 from .models import FoodItem 
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import PageNotAnInteger,Paginator
 # Create your views here.
 
 # def get_food_items(request):
 #     food_items = FoodItem.objects.all()
-#     data = [model_to_dict(item)  for item in food_items]
+#     data = []
+#     for item in food_items:
+#         item_dict = model_to_dict(item)
+#         if item.image:
+#             item_dict['image']=request.build_absolute_uri(item.image.url)
+#         else:
+#             item_dict['image']=None
+#         data.append(item_dict)
 #     return JsonResponse(data, safe=False)
 
 def get_food_items(request):
-    food_items = FoodItem.objects.all()
-    data = []
-    for item in food_items:
-        item_dict = model_to_dict(item)
-        if item.image:
-            item_dict['image']=request.build_absolute_uri(item.image.url)
-        else:
-            item_dict['image']=None
-        data.append(item_dict)
-    return JsonResponse(data, safe=False)
+    try:
+        page_number = request.GET.get('page',1)
+        page_size = request.GET.get('page_size',6)
+        
+        try:
+            page_size = int(page_size)
+            if page_size <=0:
+                raise ValueError
+        except ValueError:
+            return JsonResponse({"error":"Invalid page size, page size must be an integer"}, status = 400)
+        
+        food_items = FoodItem.objects.all().order_by("id")
+        paginator = Paginator(food_items,page_size)
+        
+        try:
+            page_obj = paginator.get_page(page_number) 
+        except PageNotAnInteger:
+            return JsonResponse({"error":"Invalid page number, page number must be an integer"}, status = 400) 
     
+        data = []
+        for item in page_obj.object_list:
+            item_dict = model_to_dict(item)
+            if item.image:
+                item_dict['image']=request.build_absolute_uri(item.image.url)
+            else:
+                item_dict['image']=None
+            data.append(item_dict)
+        return JsonResponse({
+            "count":paginator.count,
+            "current_page":int(page_number),
+            "num_of_pages":paginator.num_pages,
+            "result":data
+        })
+    except Exception :
+        return JsonResponse({"error":"an unexpected error occured"},status = 500)
+
+
 @csrf_exempt
 def add_food_item(request):
     if request.method =="POST":
