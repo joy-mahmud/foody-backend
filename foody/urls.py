@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/',include('firebaseUser.urls')),
     path('api/',include('foodItems.urls')),
     path('api/',include('cart.urls')),
+    path('api/',include('stats.urls')),
 ]
 
 urlpatterns+=static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'firebaseUser',
     'corsheaders',
     'foodItems',
-    'cart'
+    'cart',
+    'stats'
 ]
 
 MIDDLEWARE = [
