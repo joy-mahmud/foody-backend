@@ -53,3 +53,15 @@ def check_user_role(request):
            return JsonResponse({'error':str(e)},status = 500)
             
     return JsonResponse({'error':"only post method is allowed"}, status = 405)    
+
+@csrf_exempt
+def delete_user(request):
+    try:
+        data = json.loads(request.body)
+        id = data.get('id')
+        user = FirebaseUser.objects.get(id=id)
+        user.delete()
+        return JsonResponse ({"message":"user deleted successfully"},status = 200)
+    except Exception as e:
+        return JsonResponse({'error':str(e)},status = 500)
+    
