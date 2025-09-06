@@ -150,8 +150,8 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
 #for ssl commerze
 SSLCZ_SANDBOX = True  # set False in production
-SSLCZ_STORE_ID = os.getenv("SSLCZ_STORE_ID", "your_sandbox_store_id")
-SSLCZ_STORE_PASS = os.getenv("SSLCZ_STORE_PASS", "your_sandbox_store_pass")
+SSLCZ_STORE_ID = os.getenv("SSLCZ_STORE_ID", "joyte68b9be9bd1640")
+SSLCZ_STORE_PASS = os.getenv("SSLCZ_STORE_PASS", "joyte68b9be9bd1640@ssl")
 
 SSLCZ_INIT_URL = (
     "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
