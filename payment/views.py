@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json,uuid,requests
 from .models import Payment
@@ -62,8 +62,38 @@ def initiate_payment(request):
     
     return JsonResponse({"error":"Only post method is allowed"})
 
+def _validate_with_ssl(val_id):
+    params ={
+        "val_id":val_id,
+        "store_id" : settings.SSLCZ_STORE_ID,
+        "store_passwd" : settings.SSLCZ_STORE_PASS,
+        "format":"json"
+    }
+    resp = requests.get(settings.SSLCZ_VALIDATION_URL,params=params,timeout=25)
+    print("validation response:=>>",resp.json())
+    return resp.json()
+
+@csrf_exempt
 def ssl_success(request):
-    return redirect(f"http://localhost:5173/payment/success")
+    data = request.POST or request.GET 
+    val_id = data.get('val_id')
+    tran_id = data.get('tran_id')
+    if not val_id or not tran_id :
+        return HttpResponseBadRequest("Missing val_id/tran_id")
+    vres = _validate_with_ssl(val_id)
+    status = vres.get("status")
+    amount = vres.get("amount")
+    if status in ("VALID","VALIDATED"):
+        Payment.objects.filter(tran_id=tran_id).update(
+            status="PAID",val_id=val_id,gateway_response=vres
+        )
+        return redirect(f"http://localhost:5173/payment/success?tran_id={tran_id}&amount={amount}")
+    else:
+        Payment.objects.filter(tran_id=tran_id).update(
+             status="FAILED",val_id=val_id,gateway_response=vres
+        )
+        return redirect(f"http://localhost:5173/payment/fail")
+    
 
 def ssl_fail(request):
     return redirect(f"http://localhost:5173/payment/fail")
