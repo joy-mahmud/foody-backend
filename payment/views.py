@@ -6,6 +6,8 @@ from django.forms.models import model_to_dict
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import redirect
+from firebaseUser.models import FirebaseUser
+from cart.models import CartItem,Order,OrderItem
 
 # Create your views here.
 def _abs(request,name):
@@ -23,13 +25,42 @@ def initiate_payment(request):
             
             if not (amount and cus_name and cus_email):
                 return JsonResponse({"error":"amount, cus_name, cus_email are required"},status = 400)
-
+            
+            try:
+                user = FirebaseUser.objects.get(email = cus_email)
+            except FirebaseUser.DoesNotExist:
+                return JsonResponse({"error":"Invalid user"},status = 404)
+            
+            cart_items = CartItem.objects.filter(user=user)
+            if not cart_items.exists():
+                return JsonResponse({"error":"Cart is empty"})
+            
+            total_amount = 0
+            order = Order.objects.create(user=user,total_amount = 0)
+            
+            for item in cart_items:
+                food  = item.food
+                quantity = item.quantity
+                price = food.price
+                subtotal = price*quantity
+                total_amount+=subtotal
+                
+                OrderItem.objects.create(
+                    order = order,
+                    food_item = food,
+                    quantity=quantity,
+                    price = price,
+                    subtotal = subtotal 
+                )
+            order.total_amount = total_amount
+            order.save()
+                 
             tran_id = uuid.uuid4().hex
-            Payment.objects.create(tran_id=tran_id,amount=amount,num_of_items=num_of_items,currency='BDT',status = 'INITIATED')  
+            Payment.objects.create(order =order, tran_id=tran_id,amount=total_amount,num_of_items=num_of_items,currency='BDT',status = 'INITIATED')  
             post_data ={
                 "store_id" : settings.SSLCZ_STORE_ID,
                 "store_passwd" : settings.SSLCZ_STORE_PASS,
-                "total_amount" :amount ,
+                "total_amount" :total_amount ,
                 "currency" : "BDT",
                 "tran_id":tran_id,
                 "success_url":_abs(request,"ssl_success"),
@@ -87,6 +118,14 @@ def ssl_success(request):
         Payment.objects.filter(tran_id=tran_id).update(
             status="PAID",val_id=val_id,gateway_response=vres
         )
+        payment  = Payment.objects.get(tran_id=tran_id)
+        order = payment.order
+        order.status = "CONFIRMED"
+        order.save()
+        
+        #clear the cart 
+        CartItem.objects.filter(user=order.user).delete()
+        
         return redirect(f"http://localhost:5173/payment/success?tran_id={tran_id}&amount={amount}")
     else:
         Payment.objects.filter(tran_id=tran_id).update(
@@ -94,10 +133,17 @@ def ssl_success(request):
         )
         return redirect(f"http://localhost:5173/payment/fail")
     
-
+@csrf_exempt
 def ssl_fail(request):
+    tran_id = (request.POST or request.GET).get('tran_id')
+    if tran_id:
+        Payment.objects.filter(tran_id=tran_id).update(status = 'FAILED') 
     return redirect(f"http://localhost:5173/payment/fail")
 
+@csrf_exempt
 def ssl_cancel(request):
+    tran_id = (request.POST or request.GET).get('tran_id')
+    if tran_id:
+        Payment.objects.filter(tran_id=tran_id).update(status = 'CANCELLED') 
     return redirect(f"http://localhost:5173/payment/cancel")
     
