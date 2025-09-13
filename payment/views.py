@@ -17,7 +17,11 @@ def _abs(request,name):
 def initiate_payment(request):
     if request.method == 'POST':
         try:
+            
             data  = json.loads(request.body)
+            user_email = data.get('user_email')
+            phone = data.get('phone')
+            address = data.get('address')
             amount =  float(data.get('amount'))
             cus_name = data.get('cus_name')
             cus_email = data.get('cus_email')
@@ -27,7 +31,7 @@ def initiate_payment(request):
                 return JsonResponse({"error":"amount, cus_name, cus_email are required"},status = 400)
             
             try:
-                user = FirebaseUser.objects.get(email = cus_email)
+                user = FirebaseUser.objects.get(email = user_email)
             except FirebaseUser.DoesNotExist:
                 return JsonResponse({"error":"Invalid user"},status = 404)
             
@@ -69,11 +73,11 @@ def initiate_payment(request):
                 "emi_option":0,
                 "cus_name":cus_name,
                 "cus_email":cus_email,
-                "cus_add1":"Dhaka",
+                "cus_add1":address,
                 "cus_city":"Dhaka",
                 "cus_postcode":"1200",
                 "cus_country":"Bangladesh",
-                "cus_phone":"01912564534",
+                "cus_phone":phone,
                 "shipping_method":"NO",
                 "num_of_item":num_of_items,
                 "product_profile":"general",
@@ -135,15 +139,32 @@ def ssl_success(request):
     
 @csrf_exempt
 def ssl_fail(request):
-    tran_id = (request.POST or request.GET).get('tran_id')
+    data = request.POST or request.GET
+    tran_id = data.get('tran_id')
     if tran_id:
-        Payment.objects.filter(tran_id=tran_id).update(status = 'FAILED') 
+        Payment.objects.filter(tran_id=tran_id).update(status = 'FAILED',gateway_response=dict(data)) 
+    try:
+        payment  = Payment.objects.get(tran_id=tran_id)
+        order = payment.order
+        order.status = "FAILED"
+        order.save()
+    except Payment.DoesNotExist:
+        pass
     return redirect(f"http://localhost:5173/payment/fail")
 
 @csrf_exempt
 def ssl_cancel(request):
-    tran_id = (request.POST or request.GET).get('tran_id')
+    data = request.POST or request.GET
+    tran_id = data.get('tran_id')
     if tran_id:
-        Payment.objects.filter(tran_id=tran_id).update(status = 'CANCELLED') 
+        Payment.objects.filter(tran_id=tran_id).update(status = 'CANCELLED',gateway_response=dict(data))
+    try:
+        payment  = Payment.objects.get(tran_id=tran_id)
+        order = payment.order
+        order.status = "FAILED"
+        order.save()
+    except Payment.DoesNotExist:
+        pass
+     
     return redirect(f"http://localhost:5173/payment/cancel")
     
