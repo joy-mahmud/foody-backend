@@ -150,7 +150,7 @@ def ssl_fail(request):
         order.save()
     except Payment.DoesNotExist:
         pass
-    return redirect(f"http://localhost:5173/payment/fail")
+    return redirect(f"http://localhost:5173/payment/fail?tran_id={tran_id}")
 
 @csrf_exempt
 def ssl_cancel(request):
@@ -166,5 +166,5 @@ def ssl_cancel(request):
     except Payment.DoesNotExist:
         pass
      
-    return redirect(f"http://localhost:5173/payment/cancel")
+    return redirect(f"http://localhost:5173/payment/cancel?tran_id={tran_id}")
     
