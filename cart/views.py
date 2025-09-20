@@ -1,9 +1,10 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-from .models import CartItem
+from .models import CartItem,Order,OrderItem
 from foodItems.models import FoodItem
 from firebaseUser.models import FirebaseUser
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 
 @csrf_exempt
 def add_to_cart(request):
@@ -79,4 +80,67 @@ def update_cart_quantity(request):
             return JsonResponse({"error":"Item not found"},status = 404)
     else:
         return JsonResponse({"error":"method not allowed"},status = 400)
+    
+def get_all_orders(request):
+    if request.method=='GET':
+        try:
+            page_number = request.GET.get('page',1)
+            page_size = request.GET.get('page_size',5)
+            
+            try:
+                page_size = int(page_size)
+                if page_size <=0:
+                    raise ValueError
+            except ValueError:
+                return JsonResponse({"error":"Invalid Page_size"},status = 400)
+            
+            orders = Order.objects.all().order_by("-created_at")
+            paginator = Paginator(orders,page_size)
+            
+            try:
+                page_obj = paginator.page(page_number)
+            except PageNotAnInteger:
+                return JsonResponse({"error":"Invalid page number"},status = 400)
+            except EmptyPage:
+                return JsonResponse({"error":"Page out of range"},status = 404)
+            
+            data  = []
+            for order in page_obj.object_list:
+                order_dict ={
+                    "id":order.id,
+                    "user":{
+                        "id":order.user.id,
+                        "name":order.user.name,
+                        "email":order.user.email
+                    },
+                    "total_amount":order.total_amount,
+                    "status":order.status,
+                    "created_at":order.created_at,
+                    "updated_at":order.updated_at,
+                    "items":[]
+                }
+                
+                for item in order.items.all():
+                    order_dict["items"].append({
+                        "id":item.id,
+                        "food_item":{
+                            "id":item.food_item.id,
+                            "name":item.food_item.title,
+                            "price":item.food_item.price,
+                            "image":request.build_absolute_uri(item.food_item.image.url) if item.food_item.image else None
+                        },
+                        "price":item.price,
+                        "quantity":item.quantity,
+                        "subtotal":item.subtotal
+                    })
+                data.append(order_dict)
+            return JsonResponse ({
+                "count":paginator.count,
+                "num_of_pages":paginator.num_pages,
+                "current_page":page_obj.number,
+                "result":data
+            })
+        except Exception as e:
+            return JsonResponse({"error":str(e)},status = 500)
+    return JsonResponse({"error":"only get method is allowed"},status = 400)    
         
